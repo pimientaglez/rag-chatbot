@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
       console.log("RAG response status:", ragResponse);
 
-      if (ragResponse.statusText !== "OK") {
+      if (!ragResponse.ok) {
         const errorText = await ragResponse.text();
         console.error("RAG backend error:", ragResponse.status, errorText);
         throw new Error(
