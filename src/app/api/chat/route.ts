@@ -10,6 +10,7 @@ const openai = createOpenAI({
 
 export async function POST(req: Request) {
   try {
+    console.log("API Key present:", !!process.env.OPENAI_API_KEY);
     const { messages } = await req.json();
 
     // Get the latest user message
@@ -75,9 +76,13 @@ User question: ${latestMessage.content}`,
       ],
     });
 
+    console.log("Returning stream response");
     return result.toTextStreamResponse();
   } catch (error) {
     console.error("Chat API error:", error);
-    return new Response("Internal server error", { status: 500 });
+    return new Response(JSON.stringify({ error: error.message }), { 
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
