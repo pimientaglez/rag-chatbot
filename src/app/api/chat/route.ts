@@ -1,4 +1,4 @@
-import { streamText } from "ai";
+import { generateText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 
 // Allow streaming responses up to 30 seconds
@@ -54,8 +54,8 @@ export async function POST(req: Request) {
       ragData = { relevantDocuments: [] };
     }
 
-    // Stream the response from your RAG backend
-    const result = streamText({
+    // Generate response from your RAG backend
+    const result = await generateText({
       model: openai("gpt-4o-mini"),
       messages: [
         {
@@ -76,8 +76,10 @@ User question: ${latestMessage.content}`,
       ],
     });
 
-    console.log("Returning stream response");
-    return result.toTextStreamResponse();
+    console.log("Returning response");
+    return new Response(result.text, {
+      headers: { 'Content-Type': 'text/plain' }
+    });
   } catch (error) {
     console.error("Chat API error:", error);
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), { 
